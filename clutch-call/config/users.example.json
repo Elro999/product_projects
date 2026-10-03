@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Arjun (Hyderabad)",
+    "timezone": "Asia/Kolkata",
+    "chat_id": null,
+    "teams": ["PHI"],
+    "players": ["LeBron James"],
+    "rivalries": [["PHI", "BOS"]],
+    "sleep_start": "23:30",
+    "sleep_end": "07:30",
+    "earliest_wake": "06:00",
+    "weekly_wake_budget": 2
+  },
+  {
+    "name": "Meera (Bengaluru)",
+    "timezone": "Asia/Kolkata",
+    "teams": ["BOS"],
+    "sleep_start": "23:00",
+    "sleep_end": "08:00",
+    "earliest_wake": "07:00",
+    "weekly_wake_budget": 1,
+    "spoiler_free": true
+  },
+  {
+    "name": "Kabir (London)",
+    "timezone": "Europe/London",
+    "teams": ["PHI"],
+    "sleep_start": "23:00",
+    "sleep_end": "07:00",
+    "earliest_wake": "06:30",
+    "weekly_wake_budget": 1
+  },
+  {
+    "name": "Dev (San Francisco)",
+    "timezone": "America/Los_Angeles",
+    "any_close_game": true,
+    "close_margin": 3,
+    "clutch_minutes": 3,
+    "sleep_start": "23:00",
+    "sleep_end": "07:00"
+  }
+]
