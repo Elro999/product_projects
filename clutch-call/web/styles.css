@@ -143,7 +143,7 @@ input[type="text"], input[type="time"], select {
 input:focus, select:focus { border-color: var(--ink); outline: none; box-shadow: 0 0 0 3px rgba(18, 22, 59, 0.12); }
 .row { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .row label.field { flex: 0 0 auto; }
-.row input[type="time"] { width: 150px; }
+.row input[type="time"], #wake-fields input[type="time"] { width: 150px; display: block; }
 .picks { display: flex; flex-wrap: wrap; gap: 7px; }
 .picks label { cursor: pointer; }
 .picks input { position: absolute; opacity: 0; }
@@ -204,4 +204,8 @@ input:focus, select:focus { border-color: var(--ink); outline: none; box-shadow:
   .summary { position: static; }
   .top nav a.hide-sm { display: none; }
   section.block { padding: 52px 0; }
+}
+@media (max-width: 560px) {
+  .strip-ticks span:nth-child(even) { display: none; }
+  .board .score { font-size: 1.8rem; }
 }

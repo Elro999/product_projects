@@ -57,7 +57,8 @@ const CC = (() => {
   function forgetKey() { try { localStorage.removeItem(KEY); } catch { /* private mode */ } }
 
   // ---------- time ----------
-  const browserZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
+  const ALIAS = { "Asia/Calcutta": "Asia/Kolkata" };
+  const browserZone = () => { const z = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata"; return ALIAS[z] || z; };
   const cityOf = (zone) => zone.split("/").pop().replaceAll("_", " ");
   function localParts(date, zone) {
     const parts = Object.fromEntries(new Intl.DateTimeFormat("en-GB", {
@@ -68,7 +69,8 @@ const CC = (() => {
   }
   const clock = (date, zone) => new Intl.DateTimeFormat("en-GB", { timeZone: zone, hour: "2-digit", minute: "2-digit", hour12: false }).format(date);
   const clock12 = (date, zone) => new Intl.DateTimeFormat("en-US", { timeZone: zone, hour: "numeric", minute: "2-digit" }).format(date).toLowerCase().replace(" ", "");
-  const zoneAbbr = (date, zone) => new Intl.DateTimeFormat("en-GB", { timeZone: zone, timeZoneName: "short" }).formatToParts(date).find((p) => p.type === "timeZoneName").value;
+  const zoneAbbr = (date, zone) => (zone === "Asia/Kolkata" || zone === "Asia/Calcutta") ? "IST"
+    : new Intl.DateTimeFormat("en-GB", { timeZone: zone, timeZoneName: "short" }).formatToParts(date).find((p) => p.type === "timeZoneName").value;
   const toMinutes = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
   const inWindow = (now, start, end) => (start <= end ? now >= start && now < end : now >= start || now < end);
 

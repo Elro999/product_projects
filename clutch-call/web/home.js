@@ -35,13 +35,13 @@
   const tipLocal = CC.clock12(tip, zone), crunchLocal = CC.clock12(crunchStart, zone);
   const tipState = CC.sleepState({ ...CC.DEFAULTS, timezone: zone }, tip);
   document.getElementById("lede").replaceChildren(
-    "A 7:30pm tip-off in New York is ", el("b", {}, `${tipLocal} in ${city}`), ". ",
+    "A 7:30pm tip-off in New York is ", el("b", {}, `${tipLocal} your time`), ". ",
     tipState === "awake"
       ? "You can't sit through every game, so you end up with the highlights on Instagram. Clutch Call watches the score instead, and pings you only if the last five minutes are close."
       : "You sleep through it, then watch the highlights on Instagram. Clutch Call stays up instead, and rings only if the last five minutes are close.",
   );
   document.getElementById("strip-title").textContent =
-    `Your night in ${city}: tip-off at ${tipLocal}, crunch time around ${crunchLocal}`;
+    `Your night (${city} time): tip-off at ${tipLocal}, crunch time around ${crunchLocal}`;
   document.getElementById("bubble-time").textContent = `Your time: ${CC.clock(crunchStart, zone)} ${CC.zoneAbbr(crunchStart, zone)}`;
   if (CC.getKey()) for (const a of document.querySelectorAll('a[href="setup.html"]')) a.textContent = "My alerts";
 
