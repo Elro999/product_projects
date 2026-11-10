@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My alerts | Clutch Call</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="on-night">
+  <header class="wrap top">
+    <a class="brand" href="./"><i></i>Clutch Call</a>
+    <nav><a href="./#replay">See it decide</a><a href="stats.html">Stats</a></nav>
+  </header>
+  <div class="wrap page-head">
+    <h1 id="page-title">Set up my alerts</h1>
+    <p id="page-sub">Tell us what counts as a game worth watching, and when you're willing to be woken for one.</p>
+  </div>
+</div>
+
+<main class="wrap">
+  <div id="manage" hidden style="padding-top:36px">
+    <div class="panel" id="telegram-panel">
+      <h3>Telegram</h3>
+      <div class="status-line"><span class="dot" id="tg-dot"></span><span id="tg-status">Checking…</span></div>
+      <p id="tg-help" style="margin-top:8px"></p>
+      <div class="actions" id="tg-actions"></div>
+      <p class="error" id="tg-error" role="alert" hidden></p>
+      <p class="ok" id="tg-ok" role="status" hidden></p>
+      <div id="loud" hidden>
+        <h3 style="margin-top:24px">Make wake alerts loud enough to wake you</h3>
+        <ol>
+          <li>Open the Clutch Call chat in Telegram and tap its name at the top.</li>
+          <li>Open Notifications, turn on Customize, and pick a long, loud sound.</li>
+          <li>Android: in the same screen, set Importance to Urgent. Then in your phone's Do Not Disturb settings, add Telegram as an allowed app.</li>
+          <li>iPhone: in Settings, Focus, Sleep, add Telegram under allowed apps.</li>
+          <li>Send a test wake-up below with your phone locked and check it gets through.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Tonight's games, in your time</h3>
+      <div id="games"><p class="empty">Loading the schedule…</p></div>
+    </div>
+
+    <div class="panel">
+      <h3>Alert history</h3>
+      <p>Every decision made for you, including the alerts that were held back.</p>
+      <div id="history"><p class="empty">Loading…</p></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <form id="form" novalidate>
+      <fieldset>
+        <legend>You</legend>
+        <label class="field" for="name">Your name</label>
+        <input type="text" id="name" maxlength="40" autocomplete="given-name" required>
+        <label class="field" for="timezone">Your time zone <span class="sub" id="zone-note"></span></label>
+        <select id="timezone"></select>
+      </fieldset>
+
+      <fieldset>
+        <legend>Teams</legend>
+        <p class="hint">You'll hear about close finishes in games these teams play.</p>
+        <div class="picks" id="teams"></div>
+        <label class="check"><input type="checkbox" id="any_close_game"><span>Any close game, whoever is playing<small>More alerts. Good if you just love a tight finish.</small></span></label>
+        <label class="field" style="margin-top:24px">Rivalries <span class="sub">Named matchups get an earlier heads-up: within 10 at any point in the fourth.</span></label>
+        <div class="row" style="align-items:flex-end">
+          <select id="riv-a" aria-label="First team" style="width:150px"></select>
+          <select id="riv-b" aria-label="Second team" style="width:150px"></select>
+          <button class="btn small ghost" type="button" id="riv-add">Add rivalry</button>
+        </div>
+        <div class="picks" id="rivalries" style="margin-top:10px"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Players</legend>
+        <p class="hint">Get an alert when one of them is having a big scoring night.</p>
+        <div class="picks" id="players"></div>
+        <div class="row" style="align-items:flex-end;margin-top:12px">
+          <input type="text" id="player-other" placeholder="Add another player" aria-label="Add another player" style="max-width:260px">
+          <button class="btn small ghost" type="button" id="player-add">Add player</button>
+        </div>
+        <label class="field" for="player_points_threshold">A big night starts at</label>
+        <div class="slider"><input type="range" id="player_points_threshold" min="25" max="50"><output id="out-points"></output></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>What counts as crunch time</legend>
+        <label class="field" for="close_margin">How close</label>
+        <div class="slider"><input type="range" id="close_margin" min="1" max="10"><output id="out-margin"></output></div>
+        <label class="field" for="clutch_minutes">How late in the fourth quarter</label>
+        <div class="slider"><input type="range" id="clutch_minutes" min="1" max="8"><output id="out-minutes"></output></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Sleep</legend>
+        <p class="hint">While you're awake, alerts arrive normally. These settings decide what happens while you sleep.</p>
+        <div class="row">
+          <label class="field">I go to bed at<input type="time" id="sleep_start" required></label>
+          <label class="field">I get up at<input type="time" id="sleep_end" required></label>
+        </div>
+        <label class="check"><input type="checkbox" id="wake_ok"><span>Wake me for a close finish<small>Off means you're never disturbed while asleep.</small></span></label>
+        <div id="wake-fields">
+          <label class="field">But never before<input type="time" id="earliest_wake"></label>
+          <label class="field" for="weekly_wake_budget">Wake-ups I'll accept per week</label>
+          <div class="slider"><input type="range" id="weekly_wake_budget" min="1" max="7"><output id="out-budget"></output></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Spoilers</legend>
+        <label class="check" style="margin-top:0"><input type="checkbox" id="spoiler_free"><span>Hide the score in my alerts<small>You'll be told the game is close, not who's ahead.</small></span></label>
+      </fieldset>
+
+      <fieldset id="privacy" style="border:0">
+        <legend>What we store</legend>
+        <p class="hint" style="max-width:62ch">Your name, time zone, these preferences, your Telegram chat ID once you connect, and a log of alerts and the buttons you tapped. No phone number, no password, no NBA login. This browser holds a private key to your settings.</p>
+        <div id="account-actions" hidden>
+          <div class="actions" style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn small ghost" type="button" id="copy-link">Copy my private link</button>
+            <button class="btn small ghost" type="button" id="pause">Pause alerts</button>
+            <button class="btn small danger" type="button" id="delete">Delete my data</button>
+          </div>
+          <p class="ok" id="account-msg" role="status" hidden></p>
+        </div>
+      </fieldset>
+    </form>
+
+    <aside class="summary" aria-live="polite">
+      <h3>What you're asking for</h3>
+      <ul id="summary"></ul>
+      <button class="btn" type="submit" form="form" id="save">Save my alerts</button>
+      <p class="error" id="form-error" role="alert" hidden style="color:#ffb4bd"></p>
+      <p class="ok" id="form-ok" role="status" hidden style="color:#9be7c6"></p>
+    </aside>
+  </div>
+</main>
+
+<footer class="wrap">
+  <p>Clutch Call is a personal project. It is not affiliated with or endorsed by the NBA. You need your own NBA League Pass to watch.</p>
+</footer>
+
+<script src="app.js"></script>
+<script src="setup.js"></script>
+</body>
+</html>

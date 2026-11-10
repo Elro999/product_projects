@@ -1,0 +1,55 @@
+name: Clutch Call poller
+
+# Watches live NBA scores on game nights and reports alert decisions to the backend.
+# Two back-to-back runs cover a full night (a job can run for at most six hours).
+on:
+  schedule:
+    - cron: "30 22 * * *"   # before the earliest evening tip-off (US Eastern)
+    - cron: "30 3 * * *"    # takes over for the late West Coast games
+    - cron: "30 16 * * 0,6" # weekend afternoon games
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/clutch-call-poller.yml"
+      - "clutch-call/clutchcall/**"
+
+concurrency:
+  group: clutch-call-poller
+  cancel-in-progress: false
+
+jobs:
+  feed-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run tests
+        working-directory: clutch-call
+        run: python -m unittest discover -s tests
+      - name: Check the score feed is reachable from here
+        working-directory: clutch-call
+        run: python -m clutchcall feedcheck
+
+  poll:
+    needs: feed-check
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Poll scores and report decisions
+        working-directory: clutch-call
+        env:
+          POLLER_SECRET: ${{ secrets.POLLER_SECRET }}
+        run: |
+          if [ -z "$POLLER_SECRET" ]; then
+            echo "POLLER_SECRET is not set for this repository. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          python -m clutchcall poll --max-minutes 285

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clutch Call: wake me only when the game is worth it</title>
+<meta name="description" content="Alerts for NBA fans far from US time zones. Sleep through the blowouts, get woken for the close finish.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="on-night">
+  <header class="wrap top">
+    <a class="brand" href="./"><i></i>Clutch Call</a>
+    <nav>
+      <a class="hide-sm" href="#replay">See it decide</a>
+      <a class="hide-sm" href="stats.html">Stats</a>
+      <a class="btn small" href="setup.html" id="nav-cta">Set up my alerts</a>
+    </nav>
+  </header>
+
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <h1>Wake me only when the game is worth it.</h1>
+        <p class="lede" id="lede">A 7:30pm tip-off in New York is <b>6:00am in Hyderabad</b>. You sleep through it, then watch the highlights on Instagram. Clutch Call stays up instead, and rings only if the last five minutes are close.</p>
+        <div class="actions">
+          <a class="btn" href="setup.html">Set up my alerts</a>
+          <a class="btn ghost" href="#replay">See it decide</a>
+        </div>
+      </div>
+      <div>
+        <div class="bubble" aria-label="Example alert"><span class="from">Clutch Call</span>[WAKE UP] Close game, crunch time: BOS @ PHI
+BOS 104 - PHI 100, Q4 4:45 left.
+Why you: you follow PHI.
+<span id="bubble-time">Your time: 07:39 IST</span><div class="keys"><span>Watch now</span><span>I'm up</span><span>Skip this one</span></div></div>
+        <p class="phone-note">Arrives on Telegram and repeats until you answer.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip-block">
+    <div class="wrap">
+      <p class="strip-title" id="strip-title">Your night, with tonight's 7:30pm Eastern game laid over it</p>
+      <div class="strip" id="strip" role="img" aria-label="Timeline of your night showing when the game and its final minutes fall"></div>
+      <div class="strip-ticks" id="strip-ticks"></div>
+      <div class="strip-key">
+        <span><i style="background:#12163b;outline:1px solid #596085"></i>You're asleep</span>
+        <span><i style="background:#fff"></i>The game</span>
+        <span><i style="background:#e8590c"></i>Crunch time, the only part we ring for</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="block" id="replay">
+  <div class="wrap">
+    <h2>One game, four fans, four different calls</h2>
+    <p class="intro">Step through a Celtics at 76ers game that goes to overtime. The score is the same for everyone. What each fan gets depends on who they follow, where they live and how they sleep.</p>
+    <div class="replay">
+      <div class="board">
+        <div class="score num" id="score">BOS 0 <small>at</small> PHI 0</div>
+        <div class="when num" id="game-clock">Q1 12:00</div>
+        <div class="controls">
+          <button class="btn small ghost" id="prev" type="button" style="color:#fff;border-color:rgba(255,255,255,.35)">Back</button>
+          <input type="range" id="scrub" min="0" max="9" value="0" aria-label="Moment in the game">
+          <button class="btn small" id="next" type="button">Next moment</button>
+        </div>
+      </div>
+      <div id="fans"></div>
+      <div class="replay-foot" id="tally">Sample timeline for demonstration, not a real game.</div>
+    </div>
+  </div>
+</section>
+
+<section class="block" style="padding-top:0">
+  <div class="wrap">
+    <h2>Every alert gets one of three answers</h2>
+    <div class="tiers">
+      <div>
+        <span class="chip push">Push</span>
+        <h3 style="margin-top:12px">You're awake</h3>
+        <p>A normal Telegram message with a button that opens the game on nba.com.</p>
+      </div>
+      <div>
+        <span class="chip wake">Wake</span>
+        <h3 style="margin-top:12px">You're asleep, and agreed to be woken</h3>
+        <p>Sent only after the earliest time you set. It repeats until you tap "I'm up" or "Skip this one", and spends one of your weekly wake-ups.</p>
+      </div>
+      <div>
+        <span class="chip suppressed">Held back</span>
+        <h3 style="margin-top:12px">Sleep wins</h3>
+        <p>Too early, or your wake-ups for the week are spent. Nothing is sent, and the reason is logged so you can see what you missed.</p>
+      </div>
+    </div>
+
+    <table class="rules">
+      <thead><tr><th scope="col">What triggers an alert</th><th scope="col">When it fires</th></tr></thead>
+      <tbody>
+        <tr><td>Crunch time</td><td>A game you care about is within your margin (5 points unless you change it) in the last minutes of the fourth quarter.</td></tr>
+        <tr><td>Overtime</td><td>A game you care about goes to overtime.</td></tr>
+        <tr><td>Rivalry</td><td>A matchup you named is within 10 at any point in the fourth, as an earlier heads-up.</td></tr>
+        <tr><td>Big night</td><td>A player you follow passes your points mark (35 unless you change it).</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <h2>Two minutes to set up. Free.</h2>
+    <a class="btn" href="setup.html">Set up my alerts</a>
+  </div>
+</section>
+
+<footer class="wrap">
+  <p>Clutch Call is a personal project by Rohith. It is not affiliated with or endorsed by the NBA. Live scores come from an unofficial feed and can be late or unavailable. You need your own NBA League Pass to watch. Read <a href="setup.html#privacy">what we store</a> or see the <a href="stats.html">stats</a>.</p>
+</footer>
+
+<script src="app.js"></script>
+<script src="replay-data.js"></script>
+<script src="home.js"></script>
+</body>
+</html>
