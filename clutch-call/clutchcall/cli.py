@@ -3,11 +3,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import telegram
+from . import cloud, telegram
 from .engine import Engine
 from .feed import NBALiveFeed, ReplayFeed
 from .models import UserPrefs
@@ -79,6 +80,14 @@ def main() -> None:
     live.add_argument("--users", default=ROOT / "config" / "users.json")
     live.add_argument("--interval", type=int, default=20)
     live.set_defaults(run=run_live)
+
+    poll = sub.add_parser("poll", help="hosted mode: users and logs in the backend (needs POLLER_SECRET)")
+    poll.add_argument("--interval", type=int, default=20)
+    poll.add_argument("--max-minutes", type=int, default=290)
+    poll.set_defaults(run=lambda a: cloud.run(a.interval, a.max_minutes))
+
+    check = sub.add_parser("feedcheck", help="check the live score feed is reachable from this machine")
+    check.set_defaults(run=lambda a: sys.exit(cloud.feed_check()))
 
     args = parser.parse_args()
     args.run(args)

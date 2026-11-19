@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stats | Clutch Call</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="on-night">
+  <header class="wrap top">
+    <a class="brand" href="./"><i></i>Clutch Call</a>
+    <nav><a href="./#replay">See it decide</a><a class="btn small" href="setup.html">Set up my alerts</a></nav>
+  </header>
+  <div class="wrap page-head">
+    <h1>Is it working?</h1>
+    <p>Live numbers from the alert log. An alert only counts as a success if the fan went and watched.</p>
+  </div>
+</div>
+
+<main class="wrap" style="padding:44px 0 80px">
+  <p class="error" id="error" role="alert" hidden></p>
+  <div class="tiles" id="tiles"></div>
+
+  <h2 style="margin-top:56px">Why alerts were held back</h2>
+  <p style="color:var(--mute);margin-top:10px">Each one is a time the engine chose a fan's sleep over the game.</p>
+  <div class="bars" id="held"></div>
+
+  <h2 style="margin-top:56px">What triggered the alerts that went out</h2>
+  <div class="bars" id="rules"></div>
+
+  <h2 style="margin-top:56px">Score checker runs</h2>
+  <p style="color:var(--mute);margin-top:10px">One row per night the checker ran. Times are in your time zone.</p>
+  <div id="runs"></div>
+</main>
+
+<footer class="wrap"><p>Counts exclude test alerts. Clutch Call is a personal project and is not affiliated with the NBA.</p></footer>
+
+<script src="app.js"></script>
+<script>
+(async () => {
+  const { el } = CC;
+  const $ = (id) => document.getElementById(id);
+  const pct = (part, whole) => (whole ? `${Math.round((part / whole) * 100)}%` : "No data yet");
+  const bars = (target, counts, labels = {}, empty) => {
+    const rows = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const top = Math.max(1, ...rows.map((r) => r[1]));
+    $(target).replaceChildren(...(rows.length ? rows.map(([name, n]) =>
+      el("div", {}, el("span", {}, labels[name] || name[0].toUpperCase() + name.slice(1)), el("i", { style: `width:${(n / top) * 100}%` }), el("b", { class: "num" }, n)))
+      : [el("p", { class: "empty" }, empty)]));
+  };
+  try {
+    const s = await CC.api("stats");
+    const tile = (value, label) => el("div", {}, el("b", {}, String(value)), el("span", {}, label));
+    $("tiles").replaceChildren(
+      tile(s.fans, `fans signed up, ${s.fans_linked} on Telegram`),
+      tile(s.delivered, `alerts sent: ${s.pushes} normal, ${s.wakes} wake-ups`),
+      tile(s.held_back, "alerts held back to protect sleep"),
+      tile(pct(s.tapped_watch, s.delivered), "of sent alerts led to a tap on Watch now"),
+      tile(pct(s.wakes_answered, s.wakes), "of wake-ups answered with \"I'm up\""),
+      tile(s.wakes_skipped, "wake-ups skipped"),
+      tile(pct(s.worth_it, s.worth_it + s.not_worth_it), "of rated alerts were worth it"),
+      tile(s.runs.length, "recent nights the score checker ran"));
+    bars("held", s.held_back_reasons, {}, "Nothing held back yet.");
+    bars("rules", s.by_rule, CC.HEADLINES, "No alerts sent yet. Numbers appear after the first game night.");
+    const zone = CC.browserZone();
+    const stamp = (iso) => `${new Intl.DateTimeFormat("en-GB", { timeZone: zone, day: "numeric", month: "short" }).format(new Date(iso))} ${CC.clock(new Date(iso), zone)}`;
+    $("runs").replaceChildren(s.runs.length ? el("table", { class: "log" },
+      el("thead", {}, el("tr", {}, ...["Started", "Last check", "Score checks", "Games followed", "Feed errors"].map((h) => el("th", { scope: "col" }, h)))),
+      el("tbody", {}, ...s.runs.map((r) => el("tr", {}, el("td", { class: "num" }, stamp(r.started_at)),
+        el("td", { class: "num" }, stamp(r.last_seen_at) + (r.ended_at ? "" : " (running or cut off)")),
+        el("td", { class: "num" }, r.passes), el("td", { class: "num" }, r.games_seen), el("td", { class: "num" }, r.feed_errors)))))
+      : el("p", { class: "empty" }, "The score checker hasn't run yet."));
+  } catch (error) {
+    $("error").textContent = error.message; $("error").hidden = false;
+  }
+})();
+</script>
+</body>
+</html>

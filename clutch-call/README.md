@@ -37,7 +37,7 @@ No dependencies beyond Python 3.10+.
 
 ```bash
 python -m clutchcall demo             # replay a sample game through the engine
-python -m unittest discover -s tests  # 22 tests
+python -m unittest discover -s tests  # 27 tests
 ```
 
 The demo replays a synthetic BOS @ PHI overtime game against four sample users in three time zones. The same instant produces four different outcomes:
@@ -113,6 +113,33 @@ feed (replay | live scoreboard) -> rules -> delivery tier + wake budget -> messa
 3. Escalation for wake alerts (a phone call, since a push will not beat Do Not Disturb)
 4. Persist state (Supabase) and host the poller
 5. A watchability score learned from the group's feedback
+
+## Hosted prototype
+
+The engine above now runs as a small hosted product, all on free tiers:
+
+| Piece | Where | What it does |
+|---|---|---|
+| Website | `web/` (static, deployed on Vercel) | Onboarding, "My alerts", replay demo, stats |
+| Backend | `supabase/functions/api` (Supabase edge function) | Saves preferences, talks to Telegram, logs every decision |
+| Database | Supabase Postgres | `users`, `alerts`, `games`, `poller_runs` |
+| Poller | `clutchcall/cloud.py`, run by `.github/workflows/clutch-call-poller.yml` | Reads live scores, runs the engine, reports decisions |
+| Delivery | Telegram bot | Wake alerts repeat every ~30s until the fan taps "I'm up" or "Skip this one" |
+
+There are no passwords. Each fan's browser holds a private key to their settings, and tables are closed to the public (row level security, no policies); everything goes through the edge function.
+
+Secrets, set once:
+
+| Secret | Where | Value |
+|---|---|---|
+| `TELEGRAM_BOT_TOKEN` | Supabase edge function secrets | From @BotFather |
+| `POLLER_SECRET` | Supabase edge function secrets and GitHub Actions secrets | Any long random string, the same in both places |
+| `SITE_URL` (optional) | Supabase edge function secrets | The website address, used in bot replies |
+
+```bash
+python -m clutchcall feedcheck   # is the score feed reachable from this machine?
+POLLER_SECRET=... python -m clutchcall poll
+```
 
 ## Running it live
 
